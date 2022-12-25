@@ -1,6 +1,8 @@
-import { Controller, Delete, Get, Param, Patch, Post, Req } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Req } from "@nestjs/common";
 import {UserService} from "./user.service";
 import {Request} from "express";
+import { CreateUserDto } from "./dto/user-create.dto";
+import { UpdateUserDto } from "./dto/user-update.dto";
 
 @Controller('/user')
 export class UserController {
@@ -16,23 +18,24 @@ export class UserController {
     //now lets define a Post  controller
 
     @Post()
-    store(@Req() req: Request) {    //i store the request in a variable
-        return (this.userService.create(req));  //this is the body of the request
+    store(@Body() createUserDto: CreateUserDto) {    //i store the request in a variable
+        return (this.userService.create(createUserDto));  //this is the body of the request
     }
 
-    @Patch()
-    update(@Req() req: Request, @Param() param: {userId:number}) {    //i store the request in a variable
-        return (this.userService.update(req, param));  //this is the body of the request
+    @Patch('/:userId')
+    update(  @Body() updateUserDto: UpdateUserDto,
+             @Param('userId', ParseIntPipe) userId: number) {    //i store the request in a variable
+        return (this.userService.update(updateUserDto, userId));  //this is the body of the request
     }
 
     @Get('/:userId') //set userId as a subroute
-    getUser(@Param() param: {userId: number}) { //i set the param decorator to get the userId
-            return (this.userService.show(param))
+    getUser(@Param('userId', ParseIntPipe) userId: number) { //i set the param decorator to get the userId
+            return (this.userService.show(userId))
     }
 
     @Delete('/:userId') //set default route to userId
-    deleteUser(@Param() param: {userId: number}) { //i set the param decorator to get the userId
-            return (this.userService.delete(param))
+    deleteUser(@Param('userId', ParseIntPipe) userId: number) { //i set the param decorator to get the userId
+            return (this.userService.delete(userId))
 
     }
 }
