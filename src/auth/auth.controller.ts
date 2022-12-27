@@ -6,10 +6,11 @@ import { Request } from '@nestjs/common';
 
 @Controller('auth')
 export class AuthController {
+    constructor(private authService: AuthService){}
 
     @UseGuards(AuthGuard('local'))
     @Post('/login')
     async login (@Request() req: any) {
-        return req.user;
+        return this.authService.login(req.user);
     }
 }
